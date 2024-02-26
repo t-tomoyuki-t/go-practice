@@ -1,67 +1,58 @@
 package repository
 
 import (
-	"errors"
 	"go-practice/domain/object"
 	"go-practice/domain/repository"
+
+	"gorm.io/gorm"
 )
 
-type todoRepository struct{}
-
-func NewTodoReposiory() repository.ITodoRepository {
-	return &todoRepository{}
+type todoRepository struct {
+	db *gorm.DB
 }
 
-func (r *todoRepository) GetAll() ([]*object.Todo, error) {
-	return todos, nil
+func NewTodoReposiory(db *gorm.DB) repository.ITodoRepository {
+	return &todoRepository{db}
+}
+
+func (r *todoRepository) GetAll() (*[]object.Todo, error) {
+	todos := []object.Todo{}
+	res := r.db.Find(&todos)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+	return &todos, nil
 }
 
 func (r *todoRepository) Get(id int) (*object.Todo, error) {
-	for _, todo := range todos {
-		if todo.Id == id {
-			return todo, nil
-		}
+	t := object.Todo{}
+	res := r.db.First(&t, id)
+	if res.Error != nil {
+		return nil, res.Error
 	}
-	return nil, errors.New("")
+	return &t, nil
 }
 
 func (r *todoRepository) Store(t *object.Todo) error {
-	todos = append(todos, t)
+	res := r.db.Create(t)
+	if res.Error != nil {
+		return res.Error
+	}
 	return nil
 }
 
 func (r *todoRepository) Update(t *object.Todo) error {
-	for _, todo := range todos {
-		if todo.Id == t.Id {
-			todo.Title = t.Title
-			return nil
-		}
+	res := r.db.Save(t)
+	if res.Error != nil {
+		return res.Error
 	}
-	return errors.New("")
-}
-
-func (r *todoRepository) Delete(id int) error {
-	tmp := []*object.Todo{}
-	for _, todo := range todos {
-		if todo.Id != id {
-			tmp = append(tmp, todo)
-		}
-	}
-	todos = tmp
 	return nil
 }
 
-var todos = []*object.Todo{
-	{
-		Id:    1,
-		Title: "study",
-	},
-	{
-		Id:    2,
-		Title: "training",
-	},
-	{
-		Id:    3,
-		Title: "work",
-	},
+func (r *todoRepository) Delete(id int) error {
+	res := r.db.Delete(&object.Todo{}, id)
+	if res.Error != nil {
+		return res.Error
+	}
+	return nil
 }

@@ -13,7 +13,7 @@ func NewTodoUseCase(r repository.ITodoRepository) *TodoUseCase {
 	return &TodoUseCase{r}
 }
 
-func (u *TodoUseCase) GetAll() ([]*object.Todo, error) {
+func (u *TodoUseCase) GetAll() (*[]object.Todo, error) {
 	l, err := u.r.GetAll()
 	if err != nil {
 		return nil, err

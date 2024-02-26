@@ -5,7 +5,7 @@ import (
 )
 
 type ITodoRepository interface {
-	GetAll() ([]*object.Todo, error)
+	GetAll() (*[]object.Todo, error)
 	Get(int) (*object.Todo, error)
 	Store(*object.Todo) error
 	Update(*object.Todo) error
