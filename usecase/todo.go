@@ -1,7 +1,7 @@
 package usecase
 
 import (
-	"go-practice/domain/object"
+	"go-practice/domain/entity"
 	"go-practice/domain/repository"
 )
 
@@ -13,7 +13,7 @@ func NewTodoUseCase(r repository.ITodoRepository) *TodoUseCase {
 	return &TodoUseCase{r}
 }
 
-func (u *TodoUseCase) GetAll() (*[]object.Todo, error) {
+func (u *TodoUseCase) GetAll() (*[]entity.Todo, error) {
 	l, err := u.r.GetAll()
 	if err != nil {
 		return nil, err
@@ -21,7 +21,7 @@ func (u *TodoUseCase) GetAll() (*[]object.Todo, error) {
 	return l, nil
 }
 
-func (u *TodoUseCase) Get(id int) (*object.Todo, error) {
+func (u *TodoUseCase) Get(id int) (*entity.Todo, error) {
 	t, err := u.r.Get(id)
 	if err != nil {
 		return nil, err
@@ -29,7 +29,7 @@ func (u *TodoUseCase) Get(id int) (*object.Todo, error) {
 	return t, nil
 }
 
-func (u *TodoUseCase) Store(t *object.Todo) error {
+func (u *TodoUseCase) Store(t *entity.Todo) error {
 	err := u.r.Store(t)
 	if err != nil {
 		return err
@@ -37,7 +37,7 @@ func (u *TodoUseCase) Store(t *object.Todo) error {
 	return nil
 }
 
-func (u *TodoUseCase) Update(t *object.Todo) error {
+func (u *TodoUseCase) Update(t *entity.Todo) error {
 	err := u.r.Update(t)
 	if err != nil {
 		return err

@@ -1,11 +1,12 @@
 package handler
 
 import (
-	"github.com/gin-gonic/gin"
-	"go-practice/domain/object"
+	"go-practice/domain/entity"
 	"go-practice/usecase"
 	"net/http"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
 type TodoHandler struct {
@@ -35,18 +36,18 @@ func (th *TodoHandler) GetTodo(c *gin.Context) {
 }
 
 func (th *TodoHandler) Store(c *gin.Context) {
-	var t object.Todo
+	var t entity.Todo
 	c.BindJSON(&t)
 	err := th.u.Store(&t)
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "internal server error"})
 		return
 	}
-	c.IndentedJSON(http.StatusCreated, nil)
+	c.IndentedJSON(http.StatusCreated, &t)
 }
 
 func (th *TodoHandler) Update(c *gin.Context) {
-	var t object.Todo
+	var t entity.Todo
 	c.BindUri(&t)
 	c.BindJSON(&t)
 	err := th.u.Update(&t)
@@ -54,7 +55,7 @@ func (th *TodoHandler) Update(c *gin.Context) {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "internal server error"})
 		return
 	}
-	c.IndentedJSON(http.StatusOK, nil)
+	c.IndentedJSON(http.StatusOK, &t)
 }
 
 func (th *TodoHandler) Delete(c *gin.Context) {
