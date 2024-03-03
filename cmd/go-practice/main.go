@@ -1,15 +1,18 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"github.com/redis/go-redis/v9"
 
 	"go-practice/handler"
 	"go-practice/infrastructure/repository"
@@ -18,26 +21,32 @@ import (
 )
 
 func main() {
-	db := initDb()
-	r := repository.NewTodoReposiory(db)
-	u := usecase.NewTodoUseCase(r)
-	h := handler.NewTodoHandler(u)
-	e := gin.Default()
-	router.SetRoutes(e, h)
-	e.Run(":8080")
-}
-
-func initDb() *gorm.DB {
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	rdb := initInMemory()
+	ar := repository.NewAuthRepository(rdb)
+	au := usecase.NewAuthUseCase(ar)
+	ah := handler.NewAuthHandler(au)
+
+	db := initDb()
+	r := repository.NewTodoReposiory(db)
+	u := usecase.NewTodoUseCase(r)
+	h := handler.NewTodoHandler(u)
+
+	e := gin.Default()
+	router.SetRoutes(e, h, ah)
+	e.Run(":8080")
+}
+
+func initDb() *gorm.DB {
 	dsn := fmt.Sprintf(
 		"%s:%s@tcp(%s:%s)/%s?charset=%s&parseTime=%s",
 		os.Getenv("DB_USER"),
 		os.Getenv("DB_PASSWORD"),
-		os.Getenv("DB_DRIVER"),
+		os.Getenv("DB_HOST"),
 		os.Getenv("DB_PORT"),
 		os.Getenv("DB_NAME"),
 		os.Getenv("DB_CHARSET"),
@@ -49,4 +58,30 @@ func initDb() *gorm.DB {
 	}
 
 	return db
+}
+
+func initInMemory() *redis.Client {
+	db, err := strconv.Atoi(os.Getenv("INMEMORY_DATABASE"))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	rdb := redis.NewClient(&redis.Options{
+		Addr: fmt.Sprintf(
+			"%s:%s",
+			os.Getenv("INMEMORY_HOST"),
+			os.Getenv("INMEMORY_PORT"),
+		),
+		Password: os.Getenv("INMEMORY_PASSWORD"),
+		DB:       db,
+	})
+
+	ctx := context.Background()
+	pong, err := rdb.Ping(ctx).Result()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("ping result", pong)
+
+	return rdb
 }

@@ -6,9 +6,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetRoutes(r *gin.Engine, h *handler.TodoHandler) {
+func SetRoutes(r *gin.Engine, h *handler.TodoHandler, ah *handler.AuthHandler) {
 	v1 := r.Group("/v1")
 	{
+		v1.POST("login", func(c *gin.Context) {
+			ah.Login(c)
+		})
+
 		todo := v1.Group("/todos")
 		{
 			todo.GET("/", func(c *gin.Context) {
