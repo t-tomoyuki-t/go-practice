@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetRoutes(r *gin.Engine, h *handler.TodoHandler, ah *handler.AuthHandler) {
+func SetRoutes(r *gin.Engine, th *handler.TodoHandler, ah *handler.AuthHandler, uh *handler.UserHandler) {
 	v1 := r.Group("/v1")
 	{
 		v1.POST("login", func(c *gin.Context) {
@@ -16,19 +16,26 @@ func SetRoutes(r *gin.Engine, h *handler.TodoHandler, ah *handler.AuthHandler) {
 		todo := v1.Group("/todos")
 		{
 			todo.GET("/", func(c *gin.Context) {
-				h.GetTodoList(c)
+				th.GetTodoList(c)
 			})
 			todo.GET("/:id", func(c *gin.Context) {
-				h.GetTodo(c)
+				th.GetTodo(c)
 			})
 			todo.POST("/", func(c *gin.Context) {
-				h.Store(c)
+				th.Store(c)
 			})
 			todo.PATCH("/:id", func(c *gin.Context) {
-				h.Update(c)
+				th.Update(c)
 			})
 			todo.DELETE("/:id", func(c *gin.Context) {
-				h.Delete(c)
+				th.Delete(c)
+			})
+		}
+
+		user := v1.Group("/users")
+		{
+			user.GET("/:id", func (c *gin.Context)  {
+				uh.GetUser(c)
 			})
 		}
 	}

@@ -24,3 +24,13 @@ func (r *userRepository) Get(id int) (*entity.User, error) {
 
 	return &u, nil
 }
+
+func (r *userRepository) GetByEmail(email string) (*entity.User, error) {
+	u := entity.User{}
+	res := r.db.Where("email = ?", email).First(&u)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	return &u, nil
+}

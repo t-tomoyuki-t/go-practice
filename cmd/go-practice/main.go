@@ -26,18 +26,23 @@ func main() {
 		log.Fatal(err)
 	}
 
+	db := initDb()
 	rdb := initInMemory()
+
+	ur := repository.NewUserRepository(db)
+	uu := usecase.NewUserUseCase(ur)
+	uh := handler.NewUserHandler(uu)
+	
 	ar := repository.NewAuthRepository(rdb)
-	au := usecase.NewAuthUseCase(ar)
+	au := usecase.NewAuthUseCase(ar, ur)
 	ah := handler.NewAuthHandler(au)
 
-	db := initDb()
-	r := repository.NewTodoReposiory(db)
-	u := usecase.NewTodoUseCase(r)
-	h := handler.NewTodoHandler(u)
+	tr := repository.NewTodoReposiory(db)
+	tu := usecase.NewTodoUseCase(tr)
+	th := handler.NewTodoHandler(tu)
 
 	e := gin.Default()
-	router.SetRoutes(e, h, ah)
+	router.SetRoutes(e, th, ah, uh)
 	e.Run(":8080")
 }
 
