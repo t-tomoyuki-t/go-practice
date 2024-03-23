@@ -14,7 +14,7 @@ func NewToken() (Token, error) {
 		return Token{}, err
 	}
 
-	return Token{uuid}, nil 
+	return Token{uuid}, nil
 }
 
 func (token Token) String() string {

@@ -16,6 +16,7 @@ import (
 
 	"go-practice/handler"
 	"go-practice/infrastructure/repository"
+	"go-practice/middleware"
 	"go-practice/router"
 	"go-practice/usecase"
 )
@@ -32,7 +33,7 @@ func main() {
 	ur := repository.NewUserRepository(db)
 	uu := usecase.NewUserUseCase(ur)
 	uh := handler.NewUserHandler(uu)
-	
+
 	ar := repository.NewAuthRepository(rdb)
 	au := usecase.NewAuthUseCase(ar, ur)
 	ah := handler.NewAuthHandler(au)
@@ -41,8 +42,10 @@ func main() {
 	tu := usecase.NewTodoUseCase(tr)
 	th := handler.NewTodoHandler(tu)
 
+	am := middleware.NewAuthMiddleware(ar)
+
 	e := gin.Default()
-	router.SetRoutes(e, th, ah, uh)
+	router.SetRoutes(e, th, ah, uh, am)
 	e.Run(":8080")
 }
 

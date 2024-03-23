@@ -6,7 +6,7 @@ import (
 )
 
 type IAuthRepository interface {
-	GetSession() error
+	GetSession(string) (string, error)
 	SetSession(vo.Token, *entity.User) error
-	DeleteSession(vo.Token) error
+	DeleteSession(string) error
 }

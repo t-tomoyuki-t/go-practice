@@ -3,6 +3,8 @@ package usecase
 import (
 	"go-practice/domain/entity"
 	"go-practice/domain/repository"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserUseCase struct {
@@ -20,4 +22,19 @@ func (u *UserUseCase) Get(id int) (*entity.User, error) {
 	}
 
 	return user, nil
+}
+
+func (usecase *UserUseCase) Register(user *entity.User) error {
+	hash, _ := bcrypt.GenerateFromPassword([]byte(user.GetPassword()), bcrypt.DefaultCost)
+	newUser := entity.NewUser(
+		user.Id,
+		user.Name,
+		user.Email,
+		string(hash),
+	)
+	err := usecase.r.Save(newUser)
+	if err != nil {
+		return err
+	}
+	return nil
 }

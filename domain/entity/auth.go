@@ -1,6 +1,6 @@
 package entity
 
 type Auth struct {
-	Email string
+	Email    string
 	Password string
 }
