@@ -24,7 +24,7 @@ func (u *UserUseCase) Get(id int) (*entity.User, error) {
 	return user, nil
 }
 
-func (usecase *UserUseCase) Register(user *entity.User) error {
+func (usecase *UserUseCase) Register(user *entity.User) (*entity.User, error) {
 	hash, _ := bcrypt.GenerateFromPassword([]byte(user.GetPassword()), bcrypt.DefaultCost)
 	newUser := entity.NewUser(
 		user.Id,
@@ -32,9 +32,9 @@ func (usecase *UserUseCase) Register(user *entity.User) error {
 		user.Email,
 		string(hash),
 	)
-	err := usecase.r.Save(newUser)
+	savedUser, err := usecase.r.Save(newUser)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return savedUser, nil
 }

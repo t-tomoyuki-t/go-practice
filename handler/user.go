@@ -30,12 +30,10 @@ func (uh *UserHandler) GetUser(c *gin.Context) {
 func (uh *UserHandler) RegisterUser(c *gin.Context) {
 	var user entity.User
 	c.BindJSON(&user)
-	err := uh.u.Register(&user)
+	newUser, err := uh.u.Register(&user)
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "internal server error"})
 		return
 	}
-	c.IndentedJSON(http.StatusCreated, gin.H{"user": user})
-
-	// TODO: 返却するIDを0ではなく正しい値にする
+	c.IndentedJSON(http.StatusCreated, gin.H{"user": newUser})
 }

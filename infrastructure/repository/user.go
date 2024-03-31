@@ -35,10 +35,10 @@ func (r *userRepository) GetByEmail(email string) (*entity.User, error) {
 	return &u, nil
 }
 
-func (r *userRepository) Save(u *entity.User) error {
+func (r *userRepository) Save(u *entity.User) (*entity.User, error) {
 	res := r.db.Save(u)
 	if res.Error != nil {
-		return res.Error
+		return nil, res.Error
 	}
-	return nil
+	return u, nil
 }
