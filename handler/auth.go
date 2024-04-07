@@ -29,7 +29,6 @@ func (ah *AuthHandler) Login(c *gin.Context) {
 
 	token, err := ah.au.Login(a)
 	if err != nil {
-		// TODO: 内部エラーは5XXで返却する
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 	}
 

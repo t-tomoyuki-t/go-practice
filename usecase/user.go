@@ -7,12 +7,17 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type UserUseCase struct {
-	r repository.IUserRepository
+type IUserExtarnal interface {
+	SendRegisterd(*entity.User) error
 }
 
-func NewUserUseCase(r repository.IUserRepository) *UserUseCase {
-	return &UserUseCase{r}
+type UserUseCase struct {
+	r  repository.IUserRepository
+	ex IUserExtarnal
+}
+
+func NewUserUseCase(r repository.IUserRepository, ex IUserExtarnal) *UserUseCase {
+	return &UserUseCase{r, ex}
 }
 
 func (u *UserUseCase) Get(id int) (*entity.User, error) {
@@ -32,9 +37,16 @@ func (usecase *UserUseCase) Register(user *entity.User) (*entity.User, error) {
 		user.Email,
 		string(hash),
 	)
+
 	savedUser, err := usecase.r.Save(newUser)
 	if err != nil {
 		return nil, err
 	}
+
+	err = usecase.ex.SendRegisterd(savedUser)
+	if err != nil {
+		return nil, err
+	}
+
 	return savedUser, nil
 }

@@ -15,6 +15,7 @@ import (
 	"github.com/redis/go-redis/v9"
 
 	"go-practice/handler"
+	"go-practice/infrastructure/external"
 	"go-practice/infrastructure/repository"
 	"go-practice/middleware"
 	"go-practice/router"
@@ -29,9 +30,10 @@ func main() {
 
 	db := initDb()
 	rdb := initInMemory()
+	uex := external.NewUserSlackNotification()
 
 	ur := repository.NewUserRepository(db)
-	uu := usecase.NewUserUseCase(ur)
+	uu := usecase.NewUserUseCase(ur, uex)
 	uh := handler.NewUserHandler(uu)
 
 	ar := repository.NewAuthRepository(rdb)
