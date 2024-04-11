@@ -24,12 +24,18 @@ func (ir *ImageRepository) Get(id int) (*entity.Image, error) {
 	return &image, nil
 }
 
-func (ir *ImageRepository) Save(*entity.Image) (*entity.Image, error) {
-	// TODO: Implement
-	return nil, nil
+func (ir *ImageRepository) Save(image *entity.Image) (*entity.Image, error) {
+	res := ir.db.Save(image)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+	return image, nil
 }
 
-func (ir *ImageRepository) Delete(*entity.Image) (error) {
-	// TODO: Implement
+func (ir *ImageRepository) Delete(image *entity.Image) error {
+	res := ir.db.Delete(image)
+	if res.Error != nil {
+		return res.Error
+	}
 	return nil
 }
