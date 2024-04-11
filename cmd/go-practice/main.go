@@ -13,6 +13,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/redis/go-redis/v9"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/credentials"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 
 	"go-practice/handler"
 	"go-practice/infrastructure/external"
@@ -94,4 +98,27 @@ func initInMemory() *redis.Client {
 	fmt.Println("ping result", pong)
 
 	return rdb
+}
+
+func initStorage() *s3.Client {
+	ctx := context.Background()
+
+	endpoint := aws.EndpointResolverWithOptionsFunc(func(service, region string, options ...interface{}) (aws.Endpoint, error) {
+		return aws.Endpoint{
+			URL: os.Getenv("AWS_S3_BUCKET"),
+		}, nil
+	})
+
+	accessKey := os.Getenv("AWS_ACCESS_KEY")
+	secretKey := os.Getenv("AWS_SECRET_KEY")
+	cred := credentials.NewStaticCredentialsProvider(accessKey, secretKey, "")
+
+	cfg, err := config.LoadDefaultConfig(ctx, config.WithCredentialsProvider(cred), config.WithEndpointResolverWithOptions(endpoint))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return s3.NewFromConfig(cfg, func (options *s3.Options)  {
+		options.UsePathStyle = true
+	})
 }

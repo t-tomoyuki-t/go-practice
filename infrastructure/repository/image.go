@@ -39,3 +39,11 @@ func (ir *ImageRepository) Delete(image *entity.Image) error {
 	}
 	return nil
 }
+
+func (ir *ImageRepository) GetPublicImage(image *entity.Image) (*entity.Image, error) {
+	return nil, nil
+}
+
+func (ir *ImageRepository) Upload(image *entity.Image) (*entity.Image, error) {
+	return nil, nil
+}
